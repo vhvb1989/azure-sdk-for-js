@@ -6,8 +6,8 @@
 
 import { IdentityPlugin } from '@azure/identity';
 
-// @public (undocumented)
-export const cachePersistencePlugin: IdentityPlugin;
+// @public
+export const nativeBrokerPlugin: IdentityPlugin;
 
 // (No @packageDocumentation comment for this package)
 
