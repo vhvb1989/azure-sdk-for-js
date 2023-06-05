@@ -22,7 +22,9 @@ export interface CachePluginControl {
 }
 
 export interface NativeBrokerPluginControl {
-  setNativeBroker(nativeBrokerFactory: () => Promise<import("@azure/msal-common").INativeBrokerPlugin>): void;
+  setNativeBroker(
+    nativeBrokerFactory: () => Promise<import("@azure/msal-common").INativeBrokerPlugin>
+  ): void;
 }
 
 /**

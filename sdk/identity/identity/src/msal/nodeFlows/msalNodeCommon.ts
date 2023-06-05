@@ -83,7 +83,7 @@ let nativeBrokerProvider: (() => Promise<msalCommon.INativeBrokerPlugin>) | unde
 export const msalNodeFlowNativeBrokerControl = {
   setNativeBroker(): void {
     nativeBrokerProvider = nativeBrokerProvider;
-  }
+  },
 };
 
 /**
@@ -225,7 +225,6 @@ export abstract class MsalNode extends MsalBaseUtilities implements MsalFlow {
     }
 
     if (options?.enableMsaPassthrough) {
-
       // WTF is this?
       /*
       this.msalConfig.extraQueryParameters: {
