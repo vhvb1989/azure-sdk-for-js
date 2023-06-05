@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { AzurePluginContext, IdentityPlugin } from "./provider";
-import { msalNodeFlowCacheControl } from "../msal/nodeFlows/msalNodeCommon";
+import { msalNodeFlowCacheControl, msalNodeFlowNativeBrokerControl } from "../msal/nodeFlows/msalNodeCommon";
 import { vsCodeCredentialControl } from "../credentials/visualStudioCodeCredential";
 
 /**
@@ -12,6 +12,7 @@ import { vsCodeCredentialControl } from "../credentials/visualStudioCodeCredenti
  */
 const pluginContext: AzurePluginContext = {
   cachePluginControl: msalNodeFlowCacheControl,
+  nativeBrokerPluginControl: msalNodeFlowNativeBrokerControl, 
   vsCodeCredentialControl: vsCodeCredentialControl,
 };
 

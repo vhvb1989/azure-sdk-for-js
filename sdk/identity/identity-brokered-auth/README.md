@@ -1,16 +1,16 @@
-# Azure Identity Plugin for Token Cache Persistence
+# Azure Identity Plugin for Brokered Authentication
 
-This package provides a plugin to the Azure Identity library for JavaScript ([`@azure/identity`](https://npmjs.com/package/@azure/identity)) that enables persistent token caching. Token cache persistence allows the built-in token cache to persist across sessions using a secure storage system provided by the local operating system.
+This package provides a plugin to the Azure Identity library for JavaScript ([`@azure/identity`](https://npmjs.com/package/@azure/identity)) that enables brokered authentication.
 
-[Source code](https://github.com/Azure/azure-sdk-for-js/tree/main/sdk/identity/identity-cache-persistence) | [Samples](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity-cache-persistence/samples-dev)
+[Source code](https://github.com/Azure/azure-sdk-for-js/tree/main/sdk/identity/identity-brokered-auth) | [Samples](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity-brokered-auth/samples-dev)
 
 ## Getting started
 
 ```javascript
 const { useIdentityPlugin } = require("@azure/identity");
-const { cachePersistencePlugin } = require("@azure/identity-cache-persistence");
+const { brokeredAuthPlugin } = require("@azure/identity-brokered-auth");
 
-useIdentityPlugin(cachePersistencePlugin);
+useIdentityPlugin(brokeredAuthPlugin);
 ```
 
 ### Prerequisites
@@ -22,13 +22,13 @@ useIdentityPlugin(cachePersistencePlugin);
 This package is designed to be used with Azure Identity for JavaScript. Install both `@azure/identity` and this package using `npm`:
 
 ```sh
-$ npm install --save @azure/identity
-$ npm install --save @azure/identity-cache-persistence
+npm install --save @azure/identity
+npm install --save @azure/identity-brokered-auth
 ```
 
 #### Supported Environments
 
-Azure Identity plugins for JavaScript support stable (even numbered) versions of Node.js starting from v12. While the plugins may run in other Node versions, no support is guaranteed. `@azure/identity-cache-persistence` **does not** support browser environments.
+Azure Identity plugins for JavaScript support stable (even numbered) versions of Node.js starting from v12. While the plugins may run in other Node versions, no support is guaranteed. `@azure/identity-brokered-auth` **does not** support browser environments.
 
 ## Key concepts
 
@@ -36,13 +36,13 @@ If this is your first time using `@azure/identity` or the Microsoft identity pla
 
 ### Azure Identity Plugins
 
-As of `@azure/identity` version 2.0.0, the Identity client library for JavaScript includes a plugin API. This package (`@azure/identity-cache-persistence`) exports a plugin object that you must pass as an argument to the top-level `useIdentityPlugin` function from the `@azure/identity` package. Enable token cache persistence in your program as follows:
+As of `@azure/identity` version 2.0.0, the Identity client library for JavaScript includes a plugin API. This package (`@azure/identity-brokered-auth`) exports a plugin object that you must pass as an argument to the top-level `useIdentityPlugin` function from the `@azure/identity` package. Enable token cache persistence in your program as follows:
 
 ```javascript
 const { useIdentityPlugin } = require("@azure/identity");
-const { cachePersistencePlugin } = require("@azure/identity-cache-persistence");
+const { brokeredAuthPlugin } = require("@azure/identity-brokered-auth");
 
-useIdentityPlugin(cachePersistencePlugin);
+useIdentityPlugin(brokeredAuthPlugin);
 ```
 
 After calling `useIdentityPlugin`, the persistent token cache plugin is registered to the `@azure/identity` package and will be available on all credentials that support persistent token caching (those that have `tokenCachePersistenceOptions` in their constructor options).
@@ -53,7 +53,7 @@ Once the plugin is registered, you can enable token cache persistence by passing
 
 ```javascript
 const { useIdentityPlugin, DeviceCodeCredential } = require("@azure/identity");
-const { cachePersistencePlugin } = require("@azure/identity-cache-persistence");
+const { cachePersistencePlugin } = require("@azure/identity-brokered-auth");
 
 useIdentityPlugin(cachePersistencePlugin);
 

@@ -31,6 +31,11 @@ export interface CredentialFlowGetTokenOptions extends GetTokenOptions {
    * Client Assertion
    */
   getAssertion?: () => Promise<string>;
+
+  /**
+   * Enable MSA passthrough.
+   */
+  enableMsaPassthrough?: boolean;
 }
 
 /**

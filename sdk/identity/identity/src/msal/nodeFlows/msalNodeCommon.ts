@@ -71,6 +71,22 @@ export const msalNodeFlowCacheControl = {
 };
 
 /**
+ * The current native broker provider, undefined by default.
+ * @internal
+ */
+let nativeBrokerProvider: (() => Promise<msalCommon.INativeBrokerPlugin>) | undefined = undefined;
+
+/**
+ * An object that allows setting the native broker provider.
+ * @internal
+ */
+export const msalNodeFlowNativeBrokerControl = {
+  setNativeBroker(): void {
+    nativeBrokerProvider = nativeBrokerProvider;
+  }
+};
+
+/**
  * MSAL partial base client for Node.js.
  *
  * It completes the input configuration with some default values.
@@ -91,6 +107,7 @@ export abstract class MsalNode extends MsalBaseUtilities implements MsalFlow {
   protected requiresConfidential: boolean = false;
   protected azureRegion?: string;
   protected createCachePlugin: (() => Promise<msalCommon.ICachePlugin>) | undefined;
+  protected createNativeBrokerPlugin: (() => Promise<msalCommon.INativeBrokerPlugin>) | undefined;
 
   /**
    * MSAL currently caches the tokens depending on the claims used to retrieve them.
@@ -110,6 +127,10 @@ export abstract class MsalNode extends MsalBaseUtilities implements MsalFlow {
     this.clientId = this.msalConfig.auth.clientId;
     if (options?.getAssertion) {
       this.getAssertion = options.getAssertion;
+    }
+
+    if (nativeBrokerProvider !== undefined) {
+      this.createNativeBrokerPlugin = () => nativeBrokerProvider!();
     }
 
     // If persistence has been configured
@@ -195,6 +216,22 @@ export abstract class MsalNode extends MsalBaseUtilities implements MsalFlow {
       this.msalConfig.cache = {
         cachePlugin: await this.createCachePlugin(),
       };
+    }
+
+    if (this.createNativeBrokerPlugin !== undefined) {
+      this.msalConfig.broker = {
+        nativeBrokerPlugin: await this.createNativeBrokerPlugin(),
+      };
+    }
+
+    if (options?.enableMsaPassthrough) {
+
+      // WTF is this?
+      /*
+      this.msalConfig.extraQueryParameters: {
+        "msal_request_type": "consumer_passthrough"
+      }
+      */
     }
 
     this.publicApp = new msalNode.PublicClientApplication(this.msalConfig);
@@ -293,6 +330,14 @@ To work with multiple accounts for the same Client ID and Tenant ID, please prov
       authority: options?.authority,
       claims: options?.claims,
     };
+
+    if (options?.enableMsaPassthrough) {
+      if (!silentRequest.tokenQueryParameters) {
+        silentRequest.tokenQueryParameters = {};
+      }
+
+      silentRequest.tokenQueryParameters["msal_request_type"] = "consumer_passthrough";
+    }
 
     try {
       this.logger.info("Attempting to acquire token silently");
