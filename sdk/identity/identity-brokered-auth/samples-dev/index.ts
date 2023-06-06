@@ -13,6 +13,8 @@ dotenv.config();
 
 async function main() {
   const credential = new InteractiveBrowserCredential({
+    clientId: process.env.AAD_TEST_CLIENT_ID,
+    authorityHost: process.env.AAD_TEST_AUTHORITY_HOST,
     enableMsaPassthrough: true,
   });
 
