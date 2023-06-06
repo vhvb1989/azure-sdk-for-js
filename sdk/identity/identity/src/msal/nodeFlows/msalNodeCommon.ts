@@ -108,6 +108,7 @@ export abstract class MsalNode extends MsalBaseUtilities implements MsalFlow {
   protected azureRegion?: string;
   protected createCachePlugin: (() => Promise<msalCommon.ICachePlugin>) | undefined;
   protected createNativeBrokerPlugin: (() => Promise<msalCommon.INativeBrokerPlugin>) | undefined;
+  protected enableMsaPassthrough?: boolean;
 
   /**
    * MSAL currently caches the tokens depending on the claims used to retrieve them.
@@ -121,6 +122,7 @@ export abstract class MsalNode extends MsalBaseUtilities implements MsalFlow {
     super(options);
     this.msalConfig = this.defaultNodeMsalConfig(options);
     this.tenantId = resolveTenantId(options.logger, options.tenantId, options.clientId);
+    this.enableMsaPassthrough = options.enableMsaPassthrough;
     this.additionallyAllowedTenantIds = resolveAddionallyAllowedTenantIds(
       options?.tokenCredentialOptions?.additionallyAllowedTenants
     );
@@ -224,15 +226,6 @@ export abstract class MsalNode extends MsalBaseUtilities implements MsalFlow {
       };
     }
 
-    if (options?.enableMsaPassthrough) {
-      // WTF is this?
-      /*
-      this.msalConfig.extraQueryParameters: {
-        "msal_request_type": "consumer_passthrough"
-      }
-      */
-    }
-
     this.publicApp = new msalNode.PublicClientApplication(this.msalConfig);
     if (this.getAssertion) {
       this.msalConfig.auth.clientAssertion = await this.getAssertion();
@@ -330,7 +323,7 @@ To work with multiple accounts for the same Client ID and Tenant ID, please prov
       claims: options?.claims,
     };
 
-    if (options?.enableMsaPassthrough) {
+    if (this.enableMsaPassthrough) {
       if (!silentRequest.tokenQueryParameters) {
         silentRequest.tokenQueryParameters = {};
       }

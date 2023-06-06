@@ -7,7 +7,7 @@
     "outDir": "./dist-esm",
     "resolveJsonModule": true,
     "paths": {
-      "@azure/identity-cache-persistence": ["./src/index"]
+      "@azure/identity-brokered-auth": ["./src/index"]
     }
   },
   "include": ["src/**/*", "test/**/*", "samples-dev/**/*"]
