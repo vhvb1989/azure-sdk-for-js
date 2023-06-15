@@ -20,6 +20,7 @@ async function main() {
   const credential = new InteractiveBrowserCredential({
     clientId: process.env.AZURE_CLIENT_ID,
     authorityHost: process.env.AZURE_AUTHORITY_HOST,
+    tenantId: process.env.AZURE_TENANT_ID,
     enableMsaPassthrough: true,
   });
 

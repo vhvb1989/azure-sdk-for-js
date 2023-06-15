@@ -21,6 +21,7 @@ async function main() {
     clientId: process.env.AZURE_CLIENT_ID,
     authorityHost: process.env.AZURE_AUTHORITY_HOST,
     enableMsaPassthrough: true,
+    tenantId: process.env.AZURE_TENANT_ID
   });
 
   // This is the scope we will use to get a token from the AAD token endpoint.
