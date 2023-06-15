@@ -32,7 +32,8 @@ async function main() {
 
   const token = await credential.getToken(scope);
 
-  console.log(`Token: ${token}`);
+  console.log(`Token: ${token.token}: ${token.expiresOnTimestamp}`);
+
 }
 
 main().catch((error) => {

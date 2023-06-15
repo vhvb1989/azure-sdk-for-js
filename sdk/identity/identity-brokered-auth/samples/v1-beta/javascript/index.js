@@ -20,8 +20,8 @@ async function main() {
   const credential = new InteractiveBrowserCredential({
     clientId: process.env.AZURE_CLIENT_ID,
     authorityHost: process.env.AZURE_AUTHORITY_HOST,
+    tenantId: process.env.AZURE_TENANT_ID,
     enableMsaPassthrough: true,
-    tenantId: process.env.AZURE_TENANT_ID
   });
 
   // This is the scope we will use to get a token from the AAD token endpoint.
@@ -32,7 +32,7 @@ async function main() {
 
   const token = await credential.getToken(scope);
 
-  console.log(`Token: ${token}`);
+  console.log(`Token: ${token.token}: ${token.expiresOnTimestamp}`);
 }
 
 main().catch((error) => {
