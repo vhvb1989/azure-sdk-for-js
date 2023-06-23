@@ -7,21 +7,23 @@
  */
 
 import { InteractiveBrowserCredential, useIdentityPlugin } from "@azure/identity";
-import { nativeBrokerPlugin } from "@azure/identity-brokered-auth";
+import { createNativeBrokerPlugin } from "@azure/identity-brokered-auth";
 import dotenv from "dotenv";
 
 // Load the plugin
-useIdentityPlugin(nativeBrokerPlugin);
+useIdentityPlugin(createNativeBrokerPlugin({
+  enableMSAPassthrough: true,
+  parentWindowHandle: Buffer.from("rterg", "utf-8"),
+}));
 
 // Load the environment
 dotenv.config();
 
 async function main() {
   const credential = new InteractiveBrowserCredential({
-    clientId: process.env.AZURE_CLIENT_ID,
+    clientId: process.env.AZURE_CLIENT_ID || "client",
     authorityHost: process.env.AZURE_AUTHORITY_HOST,
     tenantId: process.env.AZURE_TENANT_ID,
-    enableMsaPassthrough: true,
   });
 
   // This is the scope we will use to get a token from the AAD token endpoint.

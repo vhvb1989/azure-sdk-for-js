@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import * as msalNode from "@azure/msal-node";
-import { MsalNode, MsalNodeOptions } from "./msalNodeCommon";
+import { MsalNode, MsalNodeOptions, hasNativeBroker, nativeBrokerInfo } from "./msalNodeCommon";
 import { credentialLogger, formatError, formatSuccess } from "../../util/logging";
 import { AccessToken } from "@azure/core-auth";
 import { CredentialFlowGetTokenOptions } from "../credentials";
@@ -61,6 +61,14 @@ export class MsalOpenBrowser extends MsalNode {
     return this.publicApp!.acquireTokenByCode(request);
   }
 
+  private async acquireTokenInteractive(request: msalNode.InteractiveRequest) {
+    if (hasNativeBroker()) {
+      request.windowHandle = nativeBrokerInfo!.options.parentWindowHandle;
+      (request.tokenQueryParameters ??= {})["msal_request_type"] = "consumer_passthrough";
+    }
+    return this.publicApp!.acquireTokenInteractive(request);
+  }
+
   protected doGetToken(
     scopes: string[],
     options?: CredentialFlowGetTokenOptions
@@ -96,7 +104,13 @@ export class MsalOpenBrowser extends MsalNode {
           codeVerifier: this.pkceCodes?.verifier,
         };
 
-        this.acquireTokenByCode(tokenRequest)
+        const acquire = hasNativeBroker() ? this.acquireTokenInteractive.bind(this, {
+          openBrowser: (url) => interactiveBrowserMockable.open(url, { newInstance: true }).then(() => {}),
+          scopes,
+          authority: options?.authority
+        }) : this.acquireTokenByCode.bind(this, tokenRequest);
+
+        acquire()
           .then((authResponse) => {
             if (authResponse?.account) {
               this.account = msalToPublic(this.clientId, authResponse.account);

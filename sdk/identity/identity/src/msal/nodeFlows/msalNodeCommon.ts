@@ -30,6 +30,7 @@ import { LogPolicyOptions } from "@azure/core-rest-pipeline";
 import { MultiTenantTokenCredentialOptions } from "../../credentials/multiTenantTokenCredentialOptions";
 import { RegionalAuthority } from "../../regionalAuthority";
 import { TokenCachePersistenceOptions } from "./tokenCachePersistenceOptions";
+import { NativeBrokerPluginControl, NativeBrokerPluginOptions } from "../../plugins/provider";
 
 /**
  * Union of the constructor parameters that all MSAL flow types for Node.
@@ -74,15 +75,25 @@ export const msalNodeFlowCacheControl = {
  * The current native broker provider, undefined by default.
  * @internal
  */
-let nativeBrokerProvider: (() => Promise<msalCommon.INativeBrokerPlugin>) | undefined = undefined;
+let nativeBrokerInfo: {
+  broker: msalCommon.INativeBrokerPlugin;
+  options: NativeBrokerPluginOptions
+} | undefined = undefined;
+
+function hasNativeBroker(): boolean {
+  return nativeBrokerInfo !== undefined;
+}
 
 /**
  * An object that allows setting the native broker provider.
  * @internal
  */
-export const msalNodeFlowNativeBrokerControl = {
-  setNativeBroker(): void {
-    nativeBrokerProvider = nativeBrokerProvider;
+export const msalNodeFlowNativeBrokerControl: NativeBrokerPluginControl = {
+  setNativeBroker(broker, options): void {
+    nativeBrokerInfo = {
+      broker,
+      options
+    }
   },
 };
 
@@ -107,8 +118,6 @@ export abstract class MsalNode extends MsalBaseUtilities implements MsalFlow {
   protected requiresConfidential: boolean = false;
   protected azureRegion?: string;
   protected createCachePlugin: (() => Promise<msalCommon.ICachePlugin>) | undefined;
-  protected createNativeBrokerPlugin: (() => Promise<msalCommon.INativeBrokerPlugin>) | undefined;
-  protected enableMsaPassthrough?: boolean;
 
   /**
    * MSAL currently caches the tokens depending on the claims used to retrieve them.
@@ -122,17 +131,12 @@ export abstract class MsalNode extends MsalBaseUtilities implements MsalFlow {
     super(options);
     this.msalConfig = this.defaultNodeMsalConfig(options);
     this.tenantId = resolveTenantId(options.logger, options.tenantId, options.clientId);
-    this.enableMsaPassthrough = options.enableMsaPassthrough;
     this.additionallyAllowedTenantIds = resolveAddionallyAllowedTenantIds(
       options?.tokenCredentialOptions?.additionallyAllowedTenants
     );
     this.clientId = this.msalConfig.auth.clientId;
     if (options?.getAssertion) {
       this.getAssertion = options.getAssertion;
-    }
-
-    if (nativeBrokerProvider !== undefined) {
-      this.createNativeBrokerPlugin = () => nativeBrokerProvider!();
     }
 
     // If persistence has been configured
@@ -220,9 +224,9 @@ export abstract class MsalNode extends MsalBaseUtilities implements MsalFlow {
       };
     }
 
-    if (this.createNativeBrokerPlugin !== undefined) {
+    if (hasNativeBroker()) {
       this.msalConfig.broker = {
-        nativeBrokerPlugin: await this.createNativeBrokerPlugin(),
+        nativeBrokerPlugin: nativeBrokerInfo!.broker
       };
     }
 
@@ -323,7 +327,7 @@ To work with multiple accounts for the same Client ID and Tenant ID, please prov
       claims: options?.claims,
     };
 
-    if (this.enableMsaPassthrough) {
+    if (hasNativeBroker() && nativeBrokerInfo!.options.enableMSAPassthrough) {
       if (!silentRequest.tokenQueryParameters) {
         silentRequest.tokenQueryParameters = {};
       }
