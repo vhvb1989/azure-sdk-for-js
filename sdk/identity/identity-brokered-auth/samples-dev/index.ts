@@ -9,11 +9,13 @@
 import { InteractiveBrowserCredential, useIdentityPlugin } from "@azure/identity";
 import { createNativeBrokerPlugin } from "@azure/identity-brokered-auth";
 import dotenv from "dotenv";
+import { BrowserWindow } from 'electron';
+const win = new BrowserWindow();
 
 // Load the plugin
 useIdentityPlugin(createNativeBrokerPlugin({
   enableMSAPassthrough: true,
-  parentWindowHandle: Buffer.from("rterg", "utf-8"),
+  parentWindowHandle: win.getNativeWindowHandle()
 }));
 
 // Load the environment

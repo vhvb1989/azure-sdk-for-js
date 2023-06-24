@@ -75,12 +75,12 @@ export const msalNodeFlowCacheControl = {
  * The current native broker provider, undefined by default.
  * @internal
  */
-let nativeBrokerInfo: {
+export let nativeBrokerInfo: {
   broker: msalCommon.INativeBrokerPlugin;
   options: NativeBrokerPluginOptions
 } | undefined = undefined;
 
-function hasNativeBroker(): boolean {
+export function hasNativeBroker(): boolean {
   return nativeBrokerInfo !== undefined;
 }
 
