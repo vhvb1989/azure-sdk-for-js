@@ -75,12 +75,12 @@ export const msalNodeFlowCacheControl = {
  * The current native broker provider, undefined by default.
  * @internal
  */
-let nativeBrokerInfo: {
+export let nativeBrokerInfo: {
   broker: msalCommon.INativeBrokerPlugin;
   options: NativeBrokerPluginOptions
 } | undefined = undefined;
 
-function hasNativeBroker(): boolean {
+export function hasNativeBroker(): boolean {
   return nativeBrokerInfo !== undefined;
 }
 
@@ -334,6 +334,11 @@ To work with multiple accounts for the same Client ID and Tenant ID, please prov
 
       silentRequest.tokenQueryParameters["msal_request_type"] = "consumer_passthrough";
     }
+//     const pca = new PublicClientApplication(msalConfig);
+
+// pca.acquireTokenInteractive({
+//     windowHandle: win.getNativeWindowHandle()
+// });
 
     try {
       this.logger.info("Attempting to acquire token silently");

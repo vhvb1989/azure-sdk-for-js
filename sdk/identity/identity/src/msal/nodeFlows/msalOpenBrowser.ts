@@ -96,6 +96,8 @@ export class MsalOpenBrowser extends MsalNode {
           );
           return;
         }
+
+        // TODO: only build authorizationcode vs interactive request as needed
         const tokenRequest: msalNode.AuthorizationCodeRequest = {
           code: url.searchParams.get("code")!,
           redirectUri: this.redirectUri,
