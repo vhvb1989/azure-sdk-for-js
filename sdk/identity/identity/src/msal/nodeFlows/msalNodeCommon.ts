@@ -197,6 +197,7 @@ export abstract class MsalNode extends MsalBaseUtilities implements MsalFlow {
         loggerOptions: {
           loggerCallback: defaultLoggerCallback(options.logger),
           logLevel: getMSALLogLevel(getLogLevel()),
+          piiLoggingEnabled: true
         },
       },
     };

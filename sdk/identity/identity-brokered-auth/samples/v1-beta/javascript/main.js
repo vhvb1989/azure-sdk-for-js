@@ -46,6 +46,7 @@ function createWindow () {
       clientId: process.env.AZURE_CLIENT_ID || "client",
       authorityHost: process.env.AZURE_AUTHORITY_HOST,
       tenantId: process.env.AZURE_TENANT_ID,
+      //redirectUri: "http://localhost:1337"
     });
   
     // This is the scope we will use to get a token from the AAD token endpoint.
