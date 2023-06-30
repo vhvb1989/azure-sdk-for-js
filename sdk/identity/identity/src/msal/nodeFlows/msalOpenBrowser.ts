@@ -69,10 +69,32 @@ export class MsalOpenBrowser extends MsalNode {
     return this.publicApp!.acquireTokenInteractive(request);
   }
 
-  protected doGetToken(
+  protected async doGetToken(
     scopes: string[],
     options?: CredentialFlowGetTokenOptions
   ): Promise<AccessToken> {
+
+//     try {
+//       // Initialize CryptoProvider instance
+// const cryptoProvider = new msalNode.CryptoProvider();
+// // Generate PKCE Codes before starting the authorization flow
+// this.pkceCodes = await cryptoProvider.generatePkceCodes();
+//   const result = await (this.publicApp)?.acquireTokenInteractive({
+//     scopes: scopes,
+//     correlationId: options?.correlationId,
+//     redirectUri: this.redirectUri,
+//     authority: options?.authority,
+//     claims: options?.claims,
+//     loginHint: this.loginHint,
+//     codeChallenge: this.pkceCodes.challenge,
+//     codeChallengeMethod: "S256", // Use SHA256 Algorithm
+//   });
+//   // The Client Credential flow does not return an account,
+//   // so each time getToken gets called, we will have to acquire a new token through the service.
+//   return this.handleResult(scopes, this.clientId, result || undefined);
+// } catch (err: any) {
+//   throw this.handleError(scopes, err, options);
+// }
     return new Promise<AccessToken>((resolve, reject) => {
       const socketToDestroy: Socket[] = [];
 
@@ -211,6 +233,7 @@ export class MsalOpenBrowser extends MsalNode {
       });
 
       app.on("listening", () => {
+        // TODO: by kari -> this should not be called by our sdk
         const openPromise = this.openAuthCodeUrl(scopes, options);
 
         const abortSignal = options?.abortSignal;
