@@ -74,29 +74,9 @@ export class MsalOpenBrowser extends MsalNode {
     options?: CredentialFlowGetTokenOptions
   ): Promise<AccessToken> {
 
-//     try {
-//       // Initialize CryptoProvider instance
-// const cryptoProvider = new msalNode.CryptoProvider();
-// // Generate PKCE Codes before starting the authorization flow
-// this.pkceCodes = await cryptoProvider.generatePkceCodes();
-//   const result = await (this.publicApp)?.acquireTokenInteractive({
-//     scopes: scopes,
-//     correlationId: options?.correlationId,
-//     redirectUri: this.redirectUri,
-//     authority: options?.authority,
-//     claims: options?.claims,
-//     loginHint: this.loginHint,
-//     codeChallenge: this.pkceCodes.challenge,
-//     codeChallengeMethod: "S256", // Use SHA256 Algorithm
-//   });
-//   // The Client Credential flow does not return an account,
-//   // so each time getToken gets called, we will have to acquire a new token through the service.
-//   return this.handleResult(scopes, this.clientId, result || undefined);
-// } catch (err: any) {
-//   throw this.handleError(scopes, err, options);
-// }
+    try {
     return new Promise<AccessToken>((resolve, reject) => {
-      const socketToDestroy: Socket[] = [];
+      //const socketToDestroy: Socket[] = [];
 
       const requestListener = (req: http.IncomingMessage, res: http.ServerResponse): void => {
         if (!req.url) {
@@ -165,7 +145,6 @@ export class MsalOpenBrowser extends MsalNode {
                 )
               );
             }
-            cleanup();
             return;
           })
           .catch(() => {
@@ -182,73 +161,67 @@ export class MsalOpenBrowser extends MsalNode {
                 `Interactive Browser Authentication Error "Did not receive token with a valid expiration"`
               )
             );
-            cleanup();
           });
       };
 
-      const app = http.createServer(requestListener);
-      const server = stoppable(app);
+   
 
-      const listen = app.listen(this.port, this.hostname, () =>
-        this.logger.info(`InteractiveBrowserCredential listening on port ${this.port}!`)
-      );
+      // function cleanup(): void {
+      //   if (listen) {
+      //     listen.close();
+      //   }
 
-      function cleanup(): void {
-        if (listen) {
-          listen.close();
-        }
+      //   for (const socket of socketToDestroy) {
+      //     socket.destroy();
+      //   }
 
-        for (const socket of socketToDestroy) {
-          socket.destroy();
-        }
+      //   if (server) {
+      //     server.close();
+      //     server.stop();
+      //   }
+      // }
 
-        if (server) {
-          server.close();
-          server.stop();
-        }
-      }
+      // app.on("connection", (socket) => socketToDestroy.push(socket));
 
-      app.on("connection", (socket) => socketToDestroy.push(socket));
+      // app.on("error", (err) => {
+      //   cleanup();
+      //   const code = (err as any).code;
+      //   if (code === "EACCES" || code === "EADDRINUSE") {
+      //     reject(
+      //       new CredentialUnavailableError(
+      //         [
+      //           `InteractiveBrowserCredential: Access denied to port ${this.port}.`,
+      //           `Try sending a redirect URI with a different port, as follows:`,
+      //           '`new InteractiveBrowserCredential({ redirectUri: "http://localhost:1337" })`',
+      //         ].join(" ")
+      //       )
+      //     );
+      //   } else {
+      //     reject(
+      //       new CredentialUnavailableError(
+      //         `InteractiveBrowserCredential: Failed to start the necessary web server. Error: ${err.message}`
+      //       )
+      //     );
+      //   }
+      // });
 
-      app.on("error", (err) => {
-        cleanup();
-        const code = (err as any).code;
-        if (code === "EACCES" || code === "EADDRINUSE") {
-          reject(
-            new CredentialUnavailableError(
-              [
-                `InteractiveBrowserCredential: Access denied to port ${this.port}.`,
-                `Try sending a redirect URI with a different port, as follows:`,
-                '`new InteractiveBrowserCredential({ redirectUri: "http://localhost:1337" })`',
-              ].join(" ")
-            )
-          );
-        } else {
-          reject(
-            new CredentialUnavailableError(
-              `InteractiveBrowserCredential: Failed to start the necessary web server. Error: ${err.message}`
-            )
-          );
-        }
-      });
+      // app.on("listening", () => {
+      //   // TODO: by kari -> this should not be called by our sdk
+      //   //const openPromise = this.openAuthCodeUrl(scopes, options);
 
-      app.on("listening", () => {
-        // TODO: by kari -> this should not be called by our sdk
-        const openPromise = this.openAuthCodeUrl(scopes, options);
+      //   const abortSignal = options?.abortSignal;
+      //   if (abortSignal) {
+      //     abortSignal.addEventListener("abort", () => {
+      //       cleanup();
+      //       reject(new Error("Aborted"));
+      //     });
+      //   }
 
-        const abortSignal = options?.abortSignal;
-        if (abortSignal) {
-          abortSignal.addEventListener("abort", () => {
-            cleanup();
-            reject(new Error("Aborted"));
-          });
-        }
-
-        openPromise.catch((e) => {
-          cleanup();
-          reject(e);
-        });
-      });
+      //   // openPromise.catch((e) => {
+      //   //   cleanup();
+      //   //   reject(e);
+      //   // });
+      // });
     });
   }
 
