@@ -168,10 +168,10 @@ describe("CallMedia Unit Tests", async function () {
     const targetParticipant: CommunicationIdentifier = { communicationUserId: CALL_TARGET_ID };
     const recognizeOptions: CallMediaRecognizeDtmfOptions = {
       kind: "callMediaRecognizeDtmfOptions",
+      maxTonesToCollect: 5,
     };
-    const maxTonesToCollect = 5;
 
-    await callMedia.startRecognizing(targetParticipant, maxTonesToCollect, recognizeOptions);
+    await callMedia.startRecognizing(targetParticipant, recognizeOptions);
     const request = spy.getCall(0).args[0];
     const data = JSON.parse(request.body?.toString() || "");
 
@@ -194,9 +194,8 @@ describe("CallMedia Unit Tests", async function () {
       choices: [choice],
       kind: "callMediaRecognizeChoiceOptions",
     };
-    const maxTonesToCollect = 5;
 
-    await callMedia.startRecognizing(targetParticipant, maxTonesToCollect, recognizeOptions);
+    await callMedia.startRecognizing(targetParticipant, recognizeOptions);
     const request = spy.getCall(0).args[0];
     const data = JSON.parse(request.body?.toString() || "");
 
@@ -213,11 +212,10 @@ describe("CallMedia Unit Tests", async function () {
     const targetParticipant: CommunicationIdentifier = { communicationUserId: CALL_TARGET_ID };
     const recognizeOptions: CallMediaRecognizeSpeechOptions = {
       kind: "callMediaRecognizeSpeechOptions",
-      speechModelEndpointId: "customModelEndpointId",
+      speechRecognitionModelEndpointId: "customModelEndpointId",
     };
-    const maxTonesToCollect = 5;
 
-    await callMedia.startRecognizing(targetParticipant, maxTonesToCollect, recognizeOptions);
+    await callMedia.startRecognizing(targetParticipant, recognizeOptions);
     const request = spy.getCall(0).args[0];
     const data = JSON.parse(request.body?.toString() || "");
 

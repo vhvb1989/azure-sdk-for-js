@@ -22,11 +22,9 @@ import {
 export interface CallMediaRecognizeOptions extends OperationOptions {
   playPrompt?: FileSource | TextSource | SsmlSource;
   interruptCallMediaOperation?: boolean;
-  stopCurrentOperations?: boolean;
   operationContext?: string;
   interruptPrompt?: boolean;
   initialSilenceTimeoutInSeconds?: number;
-  speechModelEndpointId?: string;
 }
 
 /** The recognize configuration specific to Dtmf. */
@@ -35,6 +33,8 @@ export interface CallMediaRecognizeDtmfOptions extends CallMediaRecognizeOptions
   interToneTimeoutInSeconds?: number;
   /** List of tones that will stop recognizing. */
   stopDtmfTones?: DtmfTone[];
+  /** Maximum number of DTMF tones to be collected. */
+  maxTonesToCollect?: number;
   readonly kind: "callMediaRecognizeDtmfOptions";
 }
 
@@ -42,6 +42,10 @@ export interface CallMediaRecognizeDtmfOptions extends CallMediaRecognizeOptions
 export interface CallMediaRecognizeChoiceOptions extends CallMediaRecognizeOptions {
   /** The IvR choices for recognize. */
   choices: Choice[];
+  /** Speech language to be recognized, If not set default is en-US */
+  speechLanguage?: string;
+  /** Endpoint where the custom model was deployed. */
+  speechRecognitionModelEndpointId?: string;
   readonly kind: "callMediaRecognizeChoiceOptions";
 }
 
@@ -49,6 +53,10 @@ export interface CallMediaRecognizeChoiceOptions extends CallMediaRecognizeOptio
 export interface CallMediaRecognizeSpeechOptions extends CallMediaRecognizeOptions {
   /** The length of end silence when user stops speaking and cogservice send response. */
   endSilenceTimeoutInMs?: number;
+  /** Speech language to be recognized, If not set default is en-US */
+  speechLanguage?: string;
+  /** Endpoint where the custom model was deployed. */
+  speechRecognitionModelEndpointId?: string;
   readonly kind: "callMediaRecognizeSpeechOptions";
 }
 
@@ -60,6 +68,12 @@ export interface CallMediaRecognizeSpeechOrDtmfOptions extends CallMediaRecogniz
   interToneTimeoutInSeconds?: number;
   /** List of tones that will stop recognizing. */
   stopDtmfTones?: DtmfTone[];
+  /** Maximum number of DTMF tones to be collected. */
+  maxTonesToCollect?: number;
+  /** Speech language to be recognized, If not set default is en-US */
+  speechLanguage?: string;
+  /** Endpoint where the custom model was deployed. */
+  speechRecognitionModelEndpointId?: string;
   readonly kind: "callMediaRecognizeSpeechOrDtmfOptions";
 }
 

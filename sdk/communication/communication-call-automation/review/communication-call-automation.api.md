@@ -162,9 +162,9 @@ export class CallMedia {
     play(playSource: FileSource | TextSource | SsmlSource, playTo: CommunicationIdentifier[], playOptions?: PlayOptions): Promise<void>;
     playToAll(playSource: FileSource | TextSource | SsmlSource, playOptions?: PlayOptions): Promise<void>;
     // Warning: (ae-forgotten-export) The symbol "Tone" needs to be exported by the entry point index.d.ts
-    sendDtmf(tones: Tone[], targetParticipant: CommunicationIdentifier, sendDtmfOptions?: SendDtmfOptions): Promise<void>;
+    sendDtmf(tones: Tone[], targetParticipant: CommunicationIdentifier, sendDtmfOptions?: SendDtmfOptions): Promise<SendDtmfResult>;
     startContinuousDtmfRecognition(targetParticipant: CommunicationIdentifier, continuousDtmfRecognitionOptions?: ContinuousDtmfRecognitionOptions): Promise<void>;
-    startRecognizing(targetParticipant: CommunicationIdentifier, maxTonesToCollect: number, recognizeOptions: CallMediaRecognizeDtmfOptions | CallMediaRecognizeChoiceOptions | CallMediaRecognizeSpeechOptions | CallMediaRecognizeSpeechOrDtmfOptions): Promise<void>;
+    startRecognizing(targetParticipant: CommunicationIdentifier, recognizeOptions: CallMediaRecognizeDtmfOptions | CallMediaRecognizeChoiceOptions | CallMediaRecognizeSpeechOptions | CallMediaRecognizeSpeechOrDtmfOptions): Promise<void>;
     stopContinuousDtmfRecognition(targetParticipant: CommunicationIdentifier, continuousDtmfRecognitionOptions?: ContinuousDtmfRecognitionOptions): Promise<void>;
 }
 
@@ -173,6 +173,8 @@ export interface CallMediaRecognizeChoiceOptions extends CallMediaRecognizeOptio
     choices: Choice[];
     // (undocumented)
     readonly kind: "callMediaRecognizeChoiceOptions";
+    speechLanguage?: string;
+    speechRecognitionModelEndpointId?: string;
 }
 
 // @public
@@ -180,6 +182,7 @@ export interface CallMediaRecognizeDtmfOptions extends CallMediaRecognizeOptions
     interToneTimeoutInSeconds?: number;
     // (undocumented)
     readonly kind: "callMediaRecognizeDtmfOptions";
+    maxTonesToCollect?: number;
     stopDtmfTones?: DtmfTone[];
 }
 
@@ -195,10 +198,6 @@ export interface CallMediaRecognizeOptions extends OperationOptions {
     operationContext?: string;
     // (undocumented)
     playPrompt?: FileSource | TextSource | SsmlSource;
-    // (undocumented)
-    speechModelEndpointId?: string;
-    // (undocumented)
-    stopCurrentOperations?: boolean;
 }
 
 // @public
@@ -206,6 +205,8 @@ export interface CallMediaRecognizeSpeechOptions extends CallMediaRecognizeOptio
     endSilenceTimeoutInMs?: number;
     // (undocumented)
     readonly kind: "callMediaRecognizeSpeechOptions";
+    speechLanguage?: string;
+    speechRecognitionModelEndpointId?: string;
 }
 
 // @public
@@ -214,6 +215,9 @@ export interface CallMediaRecognizeSpeechOrDtmfOptions extends CallMediaRecogniz
     interToneTimeoutInSeconds?: number;
     // (undocumented)
     readonly kind: "callMediaRecognizeSpeechOrDtmfOptions";
+    maxTonesToCollect?: number;
+    speechLanguage?: string;
+    speechRecognitionModelEndpointId?: string;
     stopDtmfTones?: DtmfTone[];
 }
 
@@ -853,6 +857,11 @@ export interface SendDtmfFailed extends Omit<RestSendDtmfFailed, "callConnection
 
 // @public
 export interface SendDtmfOptions extends OperationOptions {
+    operationContext?: string;
+}
+
+// @public
+export interface SendDtmfResult {
     operationContext?: string;
 }
 

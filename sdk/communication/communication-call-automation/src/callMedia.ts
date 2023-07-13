@@ -40,6 +40,8 @@ import {
   CallMediaRecognizeSpeechOrDtmfOptions,
 } from "./models/options";
 import { KeyCredential, TokenCredential } from "@azure/core-auth";
+import { SendDtmfResult } from "./models/responses";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * CallMedia class represents call media related APIs.
@@ -156,7 +158,6 @@ export class CallMedia {
 
   private createRecognizeRequest(
     targetParticipant: CommunicationIdentifier,
-    maxTonesToCollect: number,
     recognizeOptions:
       | CallMediaRecognizeDtmfOptions
       | CallMediaRecognizeChoiceOptions
@@ -168,7 +169,7 @@ export class CallMedia {
         interToneTimeoutInSeconds: recognizeOptions.interToneTimeoutInSeconds
           ? recognizeOptions.interToneTimeoutInSeconds
           : 2,
-        maxTonesToCollect: maxTonesToCollect,
+        maxTonesToCollect: recognizeOptions.maxTonesToCollect,
         stopTones: recognizeOptions.stopDtmfTones,
       };
       const recognizeOptionsInternal: RecognizeOptions = {
@@ -195,6 +196,8 @@ export class CallMedia {
           ? recognizeOptions.initialSilenceTimeoutInSeconds
           : 5,
         targetParticipant: serializeCommunicationIdentifier(targetParticipant),
+        speechLanguage: recognizeOptions.speechLanguage,
+        speechRecognitionModelEndpointId: recognizeOptions.speechRecognitionModelEndpointId,
         choices: recognizeOptions.choices,
       };
       return {
@@ -219,7 +222,8 @@ export class CallMedia {
           : 5,
         targetParticipant: serializeCommunicationIdentifier(targetParticipant),
         speechOptions: speechOptions,
-        speechRecognitionModelEndpointId: recognizeOptions.speechModelEndpointId,
+        speechLanguage: recognizeOptions.speechLanguage,
+        speechRecognitionModelEndpointId: recognizeOptions.speechRecognitionModelEndpointId,
       };
       return {
         recognizeInputType: KnownRecognizeInputType.Speech,
@@ -235,7 +239,7 @@ export class CallMedia {
         interToneTimeoutInSeconds: recognizeOptions.interToneTimeoutInSeconds
           ? recognizeOptions.interToneTimeoutInSeconds
           : 2,
-        maxTonesToCollect: maxTonesToCollect,
+        maxTonesToCollect: recognizeOptions.maxTonesToCollect,
         stopTones: recognizeOptions.stopDtmfTones,
       };
       const speechOptions: SpeechOptions = {
@@ -251,7 +255,8 @@ export class CallMedia {
         targetParticipant: serializeCommunicationIdentifier(targetParticipant),
         speechOptions: speechOptions,
         dtmfOptions: dtmfOptionsInternal,
-        speechRecognitionModelEndpointId: recognizeOptions.speechModelEndpointId,
+        speechLanguage: recognizeOptions.speechLanguage,
+        speechRecognitionModelEndpointId: recognizeOptions.speechRecognitionModelEndpointId,
       };
       return {
         recognizeInputType: KnownRecognizeInputType.SpeechOrDtmf,
@@ -268,11 +273,11 @@ export class CallMedia {
 
   /**
    *  Recognize participant input.
+   *  @param targetParticipant - Target participant.
    *  @param recognizeOptions - Different attributes for recognize.
    * */
   public async startRecognizing(
     targetParticipant: CommunicationIdentifier,
-    maxTonesToCollect: number,
     recognizeOptions:
       | CallMediaRecognizeDtmfOptions
       | CallMediaRecognizeChoiceOptions
@@ -281,7 +286,7 @@ export class CallMedia {
   ): Promise<void> {
     return this.callMedia.recognize(
       this.callConnectionId,
-      this.createRecognizeRequest(targetParticipant, maxTonesToCollect, recognizeOptions),
+      this.createRecognizeRequest(targetParticipant, recognizeOptions),
       {}
     );
   }
@@ -343,12 +348,23 @@ export class CallMedia {
     tones: Tone[],
     targetParticipant: CommunicationIdentifier,
     sendDtmfOptions: SendDtmfOptions = {}
-  ): Promise<void> {
+  ): Promise<SendDtmfResult> {
     const sendDtmfRequest: SendDtmfRequest = {
       tones: tones,
       targetParticipant: serializeCommunicationIdentifier(targetParticipant),
       operationContext: sendDtmfOptions.operationContext,
     };
-    return this.callMedia.sendDtmf(this.callConnectionId, sendDtmfRequest, {});
+    const optionsInternal = {
+      ...sendDtmfOptions,
+      repeatabilityFirstSent: new Date(),
+      repeatabilityRequestID: uuidv4(),
+    };
+    // TODO: const result = await this.callMedia.sendDtmf(
+    await this.callMedia.sendDtmf(this.callConnectionId, sendDtmfRequest, optionsInternal);
+    const sendDtmfResult: SendDtmfResult = {
+      operationContext: "Test_OC",
+      // TODO: ...result,
+    };
+    return sendDtmfResult;
   }
 }
