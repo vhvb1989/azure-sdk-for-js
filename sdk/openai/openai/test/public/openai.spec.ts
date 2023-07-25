@@ -115,5 +115,21 @@ namespace Function1
       assert.equal(embeddings.data[0].embedding.length > 0, true);
       assert.isNotNull(embeddings.usage);
     });
+
+    it("issue 26348", async function () {
+      const messages = [
+        { role: "system", content: "You are a helpful assistant. You will talk like a pirate." },
+        { role: "user", content: "Give me 1000 verbs" },
+      ];
+      const modelName = "gpt-4";
+      let lastFinishReason: string | null = "";
+      const events = await client.listChatCompletions(modelName, messages, { maxTokens: 100 });
+      for await (const event of events) {
+        for (const choice of event.choices) {
+          lastFinishReason = choice.finishReason;
+        }
+      }
+      assert.equal(lastFinishReason, "length");
+    });
   });
 });
